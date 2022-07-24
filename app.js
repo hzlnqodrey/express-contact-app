@@ -21,6 +21,11 @@ const expressLayouts = require('express-ejs-layouts')
     // 2. Url Encoded (Parsing Body JSON)
     app.use(express.urlencoded({ extended: true }))
 
+    // 3. Express Validation
+    // explanatory: 
+    // - body is used to fill temporary newly data
+    // - validationResult is an array data that used to check whether newly data is approriate on validation or not
+    const { body, validationResult } = require('express-validator')
 
 
 // Routing
