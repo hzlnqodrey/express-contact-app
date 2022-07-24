@@ -131,14 +131,15 @@ app.post('/contact',
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             // return res.status(404).json({ errors: errors.array() })
+
             // Create Alert render to add-contact.ejs
             res.render('add-contact', {
                 // View Setting
                 layout: 'layouts/main-layout',
-                title: 'Form Data Tambah Contact',
+                title: 'Form Tambah Data Contact',
 
                 // Data Sending
-                errors: errors.array()
+                errors: errors.array(),
             })
         }
 

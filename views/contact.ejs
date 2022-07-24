@@ -3,8 +3,10 @@
         <div class="col-md-8">
             <h2>Daftar Kontak</h2>
 
+            <!-- Tombol untuk pergi ke route form tambah kontak -->
             <a href="/contact/add" class="btn btn-primary mb-3 mt-3">Tambah Data Contact</a>
 
+            <!-- Cek apakah data contacts ada atau tidak, kalau tidak, maka tampilkan alert -->
             <% if (contacts.length === 0) { %>
               <div class="alert alert-danger fw-bold" role="alert">
                 Data contact tidak ada
