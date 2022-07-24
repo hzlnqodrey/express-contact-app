@@ -126,16 +126,25 @@ app.post('/contact',
             .withMessage('Nomor Handphone tidak valid!'),
     ], 
 
-(req, res) => {
-    // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return res.status(404).json({ errors: errors.array() })
-    }
+    (req, res) => {
+        // Finds the validation errors in this request and wraps them in an object with handy functions
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            // return res.status(404).json({ errors: errors.array() })
+            // Create Alert render to add-contact.ejs
+            res.render('add-contact', {
+                // View Setting
+                layout: 'layouts/main-layout',
+                title: 'Form Data Tambah Contact',
 
-    // addContact will process the incoming new data
-    addContact(req.body)
-    res.redirect('/contact')
+                // Data Sending
+                errors: errors.array()
+            })
+        }
+
+        // // addContact will process the incoming new data
+        // addContact(req.body)
+        // res.redirect('/contact')
 })
 
 
