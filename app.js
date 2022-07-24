@@ -3,7 +3,7 @@ const app = express()
 const port = 8000
 
 // File Import
-const { loadContact, findContact, addContact } = require('./utils/contacts')
+const { loadContact, findContact, addContact, cekDuplikat } = require('./utils/contacts')
 
 
 // [Module View Engine] - Tell express that we use EJS
@@ -25,7 +25,7 @@ const expressLayouts = require('express-ejs-layouts')
     // explanatory: 
     // - body is used to fill temporary newly data
     // - validationResult is an array data that used to check whether newly data is approriate on validation or not
-    const { body, validationResult } = require('express-validator')
+    const { body, validationResult, check } = require('express-validator')
 
 
 // Routing
@@ -101,13 +101,29 @@ app.get('/contact/add', (req, res) => {
 
 // // ADD CONTACT DATA
 app.post('/contact', 
-    // Request Body Form Validator Check
+    // Request Body Form Validator Check (u can customize validator with check function, don't forget to import it first!)
     [
+        // Validate Name (Check Duplicate Name)
+        body('nama')
+            .custom((value) => {
+                // Cek Nama Function
+                const duplikat = cekDuplikat(value)
+
+                if (duplikat) {
+                    throw new Error('Nama contact sudah digunakan!')
+                }
+
+                return true
+            }),
         // Validate Email
-        body('email').isEmail(),
+        check('email')
+            .isEmail()
+            .withMessage('Email tidak valid!'),
 
         // Validate Mobile Phone
-        body('noHP').isMobilePhone('id-ID')
+        check('noHP')
+            .isMobilePhone('id-ID')
+            .withMessage('Nomor Handphone tidak valid!'),
     ], 
 
 (req, res) => {
@@ -117,9 +133,9 @@ app.post('/contact',
         return res.status(404).json({ errors: errors.array() })
     }
 
-    // // addContact will process the incoming new data
-    // addContact(req.body)
-    // res.redirect('/contact')
+    // addContact will process the incoming new data
+    addContact(req.body)
+    res.redirect('/contact')
 })
 
 
