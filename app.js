@@ -3,7 +3,7 @@ const app = express()
 const port = 8000
 
 // File Import
-const { loadContact, findContact, addContact, cekDuplikat } = require('./utils/contacts')
+const { loadContact, findContact, addContact, checkDuplikat, deleteContact } = require('./utils/contacts')
 
 
 // [Module View Engine] - Tell express that we use EJS
@@ -102,7 +102,7 @@ app.get('/contact', (req, res) => {
         // Data Sending
         title: 'Halaman Contact',
         contacts,
-        flashMessage: req.flash('flashMessage')
+        flashMessage: req.flash('flashMessage'),
     })
 })
 
@@ -123,8 +123,8 @@ app.post('/contact',
         // Validate Name (Check Duplicate Name)
         body('nama')
             .custom((value) => {
-                // Cek Nama Function
-                const duplikat = cekDuplikat(value)
+                // check Nama Function
+                const duplikat = checkDuplikat(value)
 
                 if (duplikat) {
                     throw new Error('Nama contact sudah digunakan!')
@@ -162,10 +162,24 @@ app.post('/contact',
             // send data to addContact func that will process the incoming new data
             addContact(req.body)
             // Send Flash Message
-            req.flash('flashMessage', 'Data contact berhasil ditambahkan!')
+            req.flash('flashMessage', `Data contact ${req.body.nama} berhasil ditambahkan!`)
             res.redirect('/contact')
         }
 })
+
+app.get('/contact/delete/:nama', (req, res) => {
+    const contact = findContact(req.params.nama)
+
+    // jika kontak tidak ada
+    if (!contact) {
+        res.status(404)
+        res.send('<h1>404 - Nama Kontak yang akan dihapus tidak ada!<h1>')
+    } else {
+        deleteContact(req.params.nama)
+        req.flash('flashMessage', `Data contact ${req.params.nama} berhasil dihapus!`)
+        res.redirect('/contact')
+    }
+}) 
 
 
 // GET DETAILED CONTACT

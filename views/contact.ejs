@@ -13,12 +13,13 @@
               </div>
             <% } else { %>
             
-            <!-- Tampilkan flash message, jika data berhasil ditambahkan -->
+            <!-- Tampilkan flash message, jika data berhasil ditambahkan/dihapus -->
             <% if (flashMessage.length !== 0) { %>
               <div class="alert alert-success" role="alert">
                 <%= flashMessage %> 
               </div>
             <% } %>
+
             
             <table class="table table-hover table-stripped">
               <thead>
