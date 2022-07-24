@@ -100,7 +100,15 @@ app.get('/contact/add', (req, res) => {
 
 
 // // ADD CONTACT DATA
-app.post('/contact', body('email').isEmail(), 
+app.post('/contact', 
+    // Request Body Form Validator Check
+    [
+        // Validate Email
+        body('email').isEmail(),
+
+        // Validate Mobile Phone
+        body('noHP').isMobilePhone('id-ID')
+    ], 
 
 (req, res) => {
     // Finds the validation errors in this request and wraps them in an object with handy functions
