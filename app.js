@@ -27,6 +27,22 @@ const expressLayouts = require('express-ejs-layouts')
     // - validationResult is an array data that used to check whether newly data is approriate on validation or not
     const { body, validationResult, check } = require('express-validator')
 
+    // 4. Flash Message
+    const session = require('express-session')
+    const cookieParser = require('cookie-parser')
+    const flash = require('connect-flash')
+        // Konfigurasi Flash Message
+            // 1. Cookie Parser, dengan key default = secret
+            app.use(cookieParser('secret'))
+            // 2. Session
+            app.use(session({
+                cookie: { maxAge: 6000 },
+                secret: 'secret',
+                resave: true,
+                saveUninitialized: true
+            }))
+            // 3. Flash
+            app.use(flash())
 
 // Routing
 // GET INDEX
@@ -86,6 +102,7 @@ app.get('/contact', (req, res) => {
         // Data Sending
         title: 'Halaman Contact',
         contacts,
+        flashMessage: req.flash('flashMessage')
     })
 })
 
@@ -141,11 +158,13 @@ app.post('/contact',
                 // Data Sending
                 errors: errors.array(),
             })
+        } else {
+            // send data to addContact func that will process the incoming new data
+            addContact(req.body)
+            // Send Flash Message
+            req.flash('flashMessage', 'Data contact berhasil ditambahkan!')
+            res.redirect('/contact')
         }
-
-        // // addContact will process the incoming new data
-        // addContact(req.body)
-        // res.redirect('/contact')
 })
 
 
