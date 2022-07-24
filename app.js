@@ -100,10 +100,18 @@ app.get('/contact/add', (req, res) => {
 
 
 // // ADD CONTACT DATA
-app.post('/contact', (req, res) => {
-    // addContact will process the incoming new data
-    addContact(req.body)
-    res.redirect('/contact')
+app.post('/contact', body('email').isEmail(), 
+
+(req, res) => {
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(404).json({ errors: errors.array() })
+    }
+
+    // // addContact will process the incoming new data
+    // addContact(req.body)
+    // res.redirect('/contact')
 })
 
 
