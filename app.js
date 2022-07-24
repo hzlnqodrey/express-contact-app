@@ -3,7 +3,7 @@ const app = express()
 const port = 8000
 
 // File Import
-const { loadContact, findContact } = require('./utils/contacts')
+const { loadContact, findContact, addContact } = require('./utils/contacts')
 
 
 // [Module View Engine] - Tell express that we use EJS
@@ -18,11 +18,12 @@ const expressLayouts = require('express-ejs-layouts')
     // 1. Express Static [To allow static file appears]
     app.use(express.static('public'))
 
-// Application Level Middleware
+    // 2. Url Encoded (Parsing Body JSON)
+    app.use(express.urlencoded({ extended: true }))
+
 
 
 // Routing
-
 // GET INDEX
 app.get('/', (req, res) => {
     const Identitas = [
@@ -88,16 +89,16 @@ app.get('/contact/add', (req, res) => {
     res.render('add-contact', {
         // View Setting
         layout: 'layouts/main-layout',
-
-        // Data Sending
         title: 'Form Tambah Data Contact',
     })
 })
 
 
-// ADD CONTACT DATA
-app.post('/contact/add', (req, res) => {
-
+// // ADD CONTACT DATA
+app.post('/contact', (req, res) => {
+    // addContact will process the incoming new data
+    addContact(req.body)
+    res.redirect('/contact')
 })
 
 

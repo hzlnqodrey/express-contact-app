@@ -13,9 +13,8 @@ if (!fs.existsSync(dataPath)) {
 }
 
 // Baca file contacts.json
-
 const loadContact = () => {
-    const fileBuffer = fs.readFileSync('./data/data-contacts/contacts.json', 'utf-8')
+    const fileBuffer = fs.readFileSync(dataPath, 'utf-8')
     const contacts = JSON.parse(fileBuffer)
     return contacts
 }
@@ -26,4 +25,16 @@ const findContact = (nama) => {
     return foundContact
 }
 
-module.exports = { loadContact, findContact }
+// menimpa data contacts.json dengan data yang baru
+const saveContacts = (contacts) => {
+    fs.writeFileSync(dataPath, JSON.stringify(contacts), 'utf-8')
+}
+
+// menambahkan data contact baru
+const addContact = (contact) => {
+    const contacts = loadContact()
+    contacts.push(contact)
+    saveContacts(contacts)
+}
+
+module.exports = { loadContact, findContact, addContact }
