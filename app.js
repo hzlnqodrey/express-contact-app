@@ -2,8 +2,8 @@ const express = require('express')
 const app = express()
 const port = 8000
 
-// File Import
-const { loadContact, findContact, addContact, checkDuplikat, deleteContact } = require('./utils/contacts')
+// Function Import from contacts.js
+const { loadContact, findContact, addContact, checkDuplikat, deleteContact, updateContacts } = require('./utils/contacts')
 
 
 // [Module View Engine] - Tell express that we use EJS
@@ -116,7 +116,7 @@ app.get('/contact/add', (req, res) => {
 })
 
 
-// // ADD CONTACT DATA
+// ADD CONTACT DATA
 app.post('/contact', 
     // Request Body Form Validator Check (u can customize validator with check function, don't forget to import it first!)
     [
@@ -167,6 +167,7 @@ app.post('/contact',
         }
 })
 
+// Hapus Data Contact
 app.get('/contact/delete/:nama', (req, res) => {
     const contact = findContact(req.params.nama)
 
@@ -181,6 +182,73 @@ app.get('/contact/delete/:nama', (req, res) => {
     }
 }) 
 
+// Edit Data Contact
+app.get('/contact/edit/:nama', (req, res) => {
+    const contact = findContact(req.params.nama)
+
+    res.render('edit-contact', {
+        // View Setting
+        layout: 'layouts/main-layout',
+        title: 'Form Ubah Data Contact',
+        contact
+    })
+})
+
+// proses ubah data
+// ADD CONTACT DATA
+app.post(
+    // Route Detail
+    '/contact/update', 
+    // Request Body Form Validator Check (u can customize validator with check function, don't forget to import it first!)
+    [
+        // Validate Name (Check Duplicate Name) Logic in Edit Form
+        body('nama')
+            .custom((value, { req }) => {
+                // check Nama Function
+                const duplikat = checkDuplikat(value)
+
+                if (value !== req.body.oldNama && duplikat) {
+                    throw new Error('Nama contact sudah digunakan!')
+                }
+
+                return true
+            }),
+        // Validate Email
+        check('email')
+            .isEmail()
+            .withMessage('Email tidak valid!'),
+
+        // Validate Mobile Phone
+        check('noHP')
+            .isMobilePhone('id-ID')
+            .withMessage('Nomor Handphone tidak valid!'),
+    ], 
+
+    (req, res) => {
+        // Finds the validation errors in this request and wraps them in an object with handy functions
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            // return res.status(404).json({ errors: errors.array() })
+
+            // Create Alert render to add-contact.ejs
+            res.render('edit-contact', {
+                // View Setting
+                layout: 'layouts/main-layout',
+                title: 'Form Ubah Data Contact',
+
+                // Data Sending
+                errors: errors.array(),
+                contact: req.body
+            })
+        // Jika berhasil
+        } else {
+            // send data to addContact func that will process the incoming new data
+            updateContacts(req.body)
+            // Send Flash Message
+            req.flash('flashMessage', `Data contact ${req.body.nama} berhasil diubah!`)
+            res.redirect('/contact')
+        }
+})
 
 // GET DETAILED CONTACT
 app.get('/contact/:nama', (req, res) => {
